@@ -1,8 +1,7 @@
-std::string evolution2right(pedestrian peaton, neighborhood vec_peaton, float vel){
+std::string evolution2right(neighborhood vec_peaton, float vel){
 
-  // posición del peaton
-  int x = peaton.position.first;
-  int y = peaton.position.second;
+  // peatón
+  cell peaton = vec_peaton.xy;
 
   // probabilidades de paso para cada celda dependiendo de la situación
   float p_a11 = 0.25;
@@ -66,6 +65,7 @@ std::string evolution2right(pedestrian peaton, neighborhood vec_peaton, float ve
     if (aleatorio <= p_w12) return "wait";
     else return "right";
   }
+
   // d)
   if (vec_peaton.xP1.type == "peaton" &&
       vec_peaton.xP1.direction == peaton.direction &&
@@ -77,6 +77,7 @@ std::string evolution2right(pedestrian peaton, neighborhood vec_peaton, float ve
     if (aleatorio <= p_w13) return "wait";
     else return "right";
   }
+
   // e)
   if (vec_peaton.xP1.type == "peaton" &&
       vec_peaton.xP1.direction != peaton.direction &&
@@ -88,6 +89,7 @@ std::string evolution2right(pedestrian peaton, neighborhood vec_peaton, float ve
     else if (aleatorio <= p_w21 + p_a21) return "left";
     else return "right";
   }
+
   // f)
   if (vec_peaton.xP1.type == "peaton" &&
       vec_peaton.xP1.direction != peaton.direction &&
@@ -98,6 +100,7 @@ std::string evolution2right(pedestrian peaton, neighborhood vec_peaton, float ve
     if (aleatorio <= p_w22) return "wait";
     else return "right";
   }
+
   // g)
   if (vec_peaton.xP1.type == "peaton" &&
       vec_peaton.xP1.direction != peaton.direction &&
@@ -108,6 +111,7 @@ std::string evolution2right(pedestrian peaton, neighborhood vec_peaton, float ve
     if (aleatorio <= p_w23) return "wait";
     else return "left";
   }
+
   // h)
   if (vec_peaton.xP1.type != "libre" &&
       vec_peaton.yM1.type != "libre" &&
@@ -119,8 +123,8 @@ std::string evolution2right(pedestrian peaton, neighborhood vec_peaton, float ve
 
   //Fig 3
   // a)
-  if (vec_peaton.xP1.type != "libre" &&
-      ((vec_peaton.xP1.direction == peaton.direction &&
+  if (((vec_peaton.xP1.type == "peaton" &&
+      vec_peaton.xP1.direction == peaton.direction &&
       vec_peaton.xP1.velocity < peaton.velocity )||
       vec_peaton.xP1.type == "obstaculo") &&
       vec_peaton.yM1.type == "libre" &&
@@ -133,8 +137,8 @@ std::string evolution2right(pedestrian peaton, neighborhood vec_peaton, float ve
   }
 
   // b)
-  if (vec_peaton.xP1.type != "libre" &&
-      ((vec_peaton.xP1.direction == peaton.direction &&
+  if (((vec_peaton.xP1.type == "peaton" &&
+      vec_peaton.xP1.direction == peaton.direction &&
       vec_peaton.xP1.velocity < peaton.velocity )||
       vec_peaton.xP1.type == "obstaculo") &&
       vec_peaton.yM1.type != "libre" &&
@@ -157,7 +161,56 @@ std::string evolution2right(pedestrian peaton, neighborhood vec_peaton, float ve
     if (aleatorio <= p_w32) return "wait";
     else return "left";
   }
+}
+
+
+std::string change_direction_cell(std::string direction_center,
+                                  std::string direction_cell){
+
+  if (direction_center == "W"){
+    if (direction_cell == "E") return "W";
+    else if (direction_cell == "W") return "E";
+  }
+
+  // else if (direction_center == "N")
+  //
+  // else if (direction_center = "S")
+
+}
 
 
 
+neighborhood vec2right(neighborhood vecindad){
+  cell peaton = vecindad.xy;
+  neighborhood rotated_neigh;
+
+  if (peaton.direction == "E") return vecindad;
+  else if (peaton.direction == "W") {
+    rotated_neigh.xP1 = vecindad.xM1;
+    rotated_neigh.xM1 = vecindad.xP1;
+    rotated_neigh.yP1 = vecindad.yM1;
+    rotated_neigh.yM1 = vecindad.yP1;
+    rotated_neigh.xy  = vecindad.xy;
+  }
+  //else if (peaton.direction == "N")
+  //else if (peaton.direction == "S")
+  if (rotated_neigh.xP1.type == "peaton")
+    rotated_neigh.xP1.direction = change_direction_cell(peaton.direction,
+                                                  rotated_neigh.xP1.direction);
+
+  if (rotated_neigh.xM1.type == "peaton")
+    rotated_neigh.xM1.direction = change_direction_cell(peaton.direction,
+                                                  rotated_neigh.xM1.direction);
+
+  if (rotated_neigh.yP1.type == "peaton")
+    rotated_neigh.yP1.direction = change_direction_cell(peaton.direction,
+                                                  rotated_neigh.yP1.direction);
+
+  if (rotated_neigh.yM1.type == "peaton")
+    rotated_neigh.yM1.direction = change_direction_cell(peaton.direction,
+                                                  rotated_neigh.yM1.direction);
+
+  if (rotated_neigh.xy.type  == "peaton")
+    rotated_neigh.xy.direction = change_direction_cell(peaton.direction,
+                                                  rotated_neigh.xy.direction);
 }
