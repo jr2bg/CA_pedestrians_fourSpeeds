@@ -1,4 +1,5 @@
-std::string evolution2right(neighborhood vec_peaton, float vel){
+// función de evolución para el peaton que va a la derecha
+std::string evolution2right(neighborhood vec_peaton){
 
   // peatón
   cell peaton = vec_peaton.xy;
@@ -150,8 +151,8 @@ std::string evolution2right(neighborhood vec_peaton, float vel){
   }
 
   // c)
-  if (vec_peaton.xP1.type != "libre" &&
-      ((vec_peaton.xP1.direction == peaton.direction &&
+  if (((vec_peaton.xP1.type == "peaton" &&
+      vec_peaton.xP1.direction == peaton.direction &&
       vec_peaton.xP1.velocity < peaton.velocity )||
       vec_peaton.xP1.type == "obstaculo") &&
       vec_peaton.yM1.type == "libre" &&
@@ -164,22 +165,16 @@ std::string evolution2right(neighborhood vec_peaton, float vel){
 }
 
 
+// cambio de dirección de la celda para que parezca que el peatón va
+// hacia la derecha
 std::string change_direction_cell(std::string direction_center,
                                   std::string direction_cell){
 
-  if (direction_center == "W"){
-    if (direction_cell == "E") return "W";
-    else if (direction_cell == "W") return "E";
-  }
-
-  // else if (direction_center == "N")
-  //
-  // else if (direction_center = "S")
-
+  return map_cells_rotation[direction_center][direction_cell];
 }
 
 
-
+// rotación de la vecindad para que parezca que va a la derecha
 neighborhood vec2right(neighborhood vecindad){
   cell peaton = vecindad.xy;
   neighborhood rotated_neigh;
@@ -194,6 +189,8 @@ neighborhood vec2right(neighborhood vecindad){
   }
   //else if (peaton.direction == "N")
   //else if (peaton.direction == "S")
+
+  //------------ cambio de dirección de las celdas con peatón
   if (rotated_neigh.xP1.type == "peaton")
     rotated_neigh.xP1.direction = change_direction_cell(peaton.direction,
                                                   rotated_neigh.xP1.direction);
@@ -213,4 +210,9 @@ neighborhood vec2right(neighborhood vecindad){
   if (rotated_neigh.xy.type  == "peaton")
     rotated_neigh.xy.direction = change_direction_cell(peaton.direction,
                                                   rotated_neigh.xy.direction);
+
+  return rotated_neigh;
 }
+
+
+// devolvemos el paso de ese peatón para el siguiente tiempo
