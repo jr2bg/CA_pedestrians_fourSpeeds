@@ -12,8 +12,8 @@
 #include "utils/randomness.h"
 #include "utils/global_vars.h"
 #include "utils/structures.h"
-#include "utils/gridNpedestrian_functs.h"
 #include "utils/evolutionRules.h"
+#include "utils/gridNpedestrian_functs.h"
 
 
 using namespace std;
