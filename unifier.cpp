@@ -12,6 +12,7 @@
 #include "utils/randomness.h"
 #include "utils/global_vars.h"
 #include "utils/structures.h"
+#include "utils/gridNpedestrian_functs.h"
 #include "utils/evolutionRules.h"
 
 
@@ -30,7 +31,7 @@ int main(){
 
 
   std::pair<int,int> result = movement_any_direction(test_n, {0,0});
-  cout << "x:  "<< result.first << "\ty:  " << result.second << "\n";
+  //cout << "x:  "<< result.first << "\ty:  " << result.second << "\n";
   // vecindad a usar para las funciones de evolución
   //test_n = vec2right(test_n);
   //cout << test_n.xy.direction << "\t"  << test_n.xP1.direction << "\n";
@@ -42,4 +43,29 @@ int main(){
   //   //assert(result == "wait" || result == "left" || result == "right");
   // }
 
+
+
+  // inicializador Grid
+  //vector<vector<string>> actual_grid = grid_starter(10);
+  //cout << actual_grid[11][0] << "\n";
+
+  // testear generador de listas de pedestrians
+  int W = 2; // número de "casillas disponibles" para transitar
+
+  int n_peatones = 2;
+  vector<string> lista_colores ({"green", "blue"});
+  vector<pair<int,int>> lista_posiciones ({{1,2},{3,5}});
+  // vector<pedestrian> lista_peatones = generator_list_pedestrians(
+  //                                       n_peatones,
+  //                                       lista_colores,
+  //                                       lista_posiciones);
+  //
+  // cout << lista_peatones[0].color << lista_peatones[0].position.first << lista_peatones[0].position.second << "\n";
+  // cout << lista_peatones[1].color << lista_peatones[1].position.first << lista_peatones[1].position.second << "\n";
+
+  pair<int,int> one_position ({1,1});
+  cout << is_valid_position_open(W,one_position) << '\n';
+  position_band(W,one_position);
+  cout << one_position.first << '\n';
+  return 0;
 }

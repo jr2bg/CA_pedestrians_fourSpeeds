@@ -246,3 +246,98 @@ std::pair<int,int> movement_any_direction(neighborhood vec_peaton,
                                             posicion_original);
   return result;
 }
+
+
+// función para una geometría abierta (pasillo donde se caén)
+bool is_valid_position_open(int W, std::pair<int,int> pos){
+  // pair.first: x
+  // pair.second: y
+  if (pos.first < 0 || pos.first >= W) return false;
+
+  return true;
+}
+
+// función para una geometría periódica (banda)
+int position_band(int W, std::pair<int,int> &pos){
+  if (pos.first< 0) pos.first = W-1;
+  else if (pos.first >= W) pos.first = 0;
+
+  return 0;
+}
+
+// función que regresa al peatón con el siguiente paso a estar y color correspondiente
+// ese peatón si está en una geometría de banda y además está en los bordes
+pedestrian pedestrian2push(std::string clr, std::pair<int,int> valid_pos){
+  pedestrian peatonAanexar(clr, valid_pos);
+  return peatonAanexar;
+}
+
+// agregamos el peatón que nos interesa a la nueva lista de peatones
+int actualize_new_list_pedestrian(
+      vector<pedestrian> &new_list_pedestrian,
+      pedestrian peatonAanexar){
+  new_list_pedestrian.push_back(peatonAanexar);
+  return 0;
+}
+
+
+// seleccion de la vecindad a partir del peatón y la teselacion
+neighborhood neighborhood_selection(
+    pedestrian peaton,
+    std::vector<std::vector<std::string>> tesellation){
+
+  neighborhood vec_peaton;
+  int x = peaton.position.first;
+  int y = peaton.position.second;
+
+  // recordar que la teselación tiene 2 filas de MAS, por las paredes
+  // lo anterior debe tomarse en cuenta durante la "construcción" de los peatones
+  vec_peaton.xy  = tesellation[y][x];
+  vec_peaton.xP1 = tesellation[y][x + 1];
+  vec_peaton.xM1 = tesellation[y][x - 1];
+  vec_peaton.yP1 = tesellation[y + 1][x];
+  vec_peaton.yM1 = tesellation[y - 1][x];
+
+  return vec_peaton;
+}
+
+// función que barre todo el ciclo que debe cubrir cada peatón de lista_peatones
+// => peaton \in lista_peatones, nueva_lista_peatones, geometria, teselación
+// <=  nueva_lista_peatones actualizada
+int inner_functions_4each_pedestrian(
+      int W,
+      pedestrian peaton,
+      std::string geometry,
+      vector<pedestrian> &new_list_pedestrian,
+      std::vector<std::vector<std::string>> tesellation){
+
+  // determinamos la vecindad del peaton
+  neighborhood vec_peaton = neighborhood_selection(   peaton,   tesellation);
+
+  // obtenemos el movimiento para cualquier dirección
+  std::pair<int,int> next_pos = movement_any_direction(   vec_peaton,   peaton.position);
+
+  // si la geometría es abierta Y pero la posición NO es válida
+  if (geometry == "open" && !is_valid_position_open(W, next_pos) ){
+    // pedestrian peatonAanexar = pedestrian2push(peaton.color, next_pos);
+    // new_list_pedestrian.push_back(nuevo_peaton);
+
+    // terminamos la ejecución del programa sin anexar algo a la lista de peatones
+    return 1;
+  }
+
+  else if (geometry == "periodic"){
+    position_band(W, next_pos);
+    // pedestrian peatonAanexar = pedestrian2push(peaton.color, next_pos);
+    // new_list_pedestrian.pus
+  }
+
+  // creamos el peaton a anexar
+  pedestrian peatonAanexar = pedestrian2push(peaton.color, next_pos);
+
+  // lo anexamos a la lista
+  actualize_new_list_pedestrian(  new_list_pedestrian, peatonAanexar);
+
+  // termina la ejecución
+  return 0;
+}

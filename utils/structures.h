@@ -1,10 +1,16 @@
-// struct pedestrian {
-//   std::pair<int,int> position;
-//   float velocity;
-//   std::string direction;
-//
-// };
+// peatón, se usará para una lista
+struct pedestrian {
+  std::pair<int,int> position;
+  std::string color;
 
+  // constructor
+  pedestrian (std::string clr = "-", std::pair<int,int> pos = {-1,-1}){
+    color = clr;
+    position = pos;
+  }
+};
+
+// celda de un grid
 struct cell {
   std::string direction; // direction \in {"E", "O", "N", "S"}
   float velocity;
@@ -21,6 +27,8 @@ struct cell {
   }
 };
 
+
+// vecindad
 struct neighborhood {
   cell xM1;
   cell xP1;

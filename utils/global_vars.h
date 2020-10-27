@@ -59,3 +59,20 @@ std::unordered_map<std::string, float> map_string2floatVelocity ({
   {"1.5", 1.5},
   {"1" , 1.}
 });
+
+// colores a usar en la GUI
+std::unordered_map<std::string, std::string> map_colors_GUI({
+  {"blue"  , "#08E4F7"},
+  {"green" , "#08F71B"},
+  {"red"   , "#F71B08"},
+  {"pink"  , "#F708E4"},
+  {"white" , "#FFFFFF"},
+  {"black" , "#000000"}
+});
+
+
+// hm de los colores con su correspondiente densidad para el grid,
+// multiplicar por densidad inicial de peatones rho_0
+// std::unordered_map<std::string,float> map_initial_densities({
+//   {""}
+// });
