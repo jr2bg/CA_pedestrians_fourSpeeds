@@ -49,7 +49,7 @@ std::string evolution2right(neighborhood vec_peaton){
       vec_peaton.yM1.type == "libre" &&
       vec_peaton.yP1.type == "libre"){
     // aplicar un random para deterimnar cuál es el que se obtiene
-    double aleatorio;
+    double aleatorio = uniform_dist_0_1(generator);
     if (aleatorio <= p_a11) return "left";
     else if (aleatorio <= p_a11 + p_w11) return "wait";
     else return "right";
@@ -62,7 +62,7 @@ std::string evolution2right(neighborhood vec_peaton){
       vec_peaton.yM1.type != "libre" &&
       vec_peaton.yP1.type == "libre"){
     // aplicar un random para deterimnar cuál es el que se obtiene
-    double aleatorio;
+    double aleatorio = uniform_dist_0_1(generator);
     if (aleatorio <= p_w12) return "wait";
     else return "right";
   }
@@ -74,7 +74,7 @@ std::string evolution2right(neighborhood vec_peaton){
       vec_peaton.yM1.type == "libre" &&
       vec_peaton.yP1.type != "libre"){
     // aplicar un random para deterimnar cuál es el que se obtiene
-    double aleatorio;
+    double aleatorio = uniform_dist_0_1(generator);
     if (aleatorio <= p_w13) return "wait";
     else return "right";
   }
@@ -85,7 +85,7 @@ std::string evolution2right(neighborhood vec_peaton){
       vec_peaton.yM1.type == "libre" &&
       vec_peaton.yP1.type == "libre"){
     // aplicar un random para deterimnar cuál es el que se obtiene
-    double aleatorio;
+    double aleatorio = uniform_dist_0_1(generator);
     if (aleatorio <= p_w21) return "wait";
     else if (aleatorio <= p_w21 + p_a21) return "left";
     else return "right";
@@ -97,7 +97,7 @@ std::string evolution2right(neighborhood vec_peaton){
       vec_peaton.yM1.type != "libre" &&
       vec_peaton.yP1.type == "libre"){
     // aplicar un random para deterimnar cuál es el que se obtiene
-    double aleatorio;
+    double aleatorio = uniform_dist_0_1(generator);
     if (aleatorio <= p_w22) return "wait";
     else return "right";
   }
@@ -108,7 +108,7 @@ std::string evolution2right(neighborhood vec_peaton){
       vec_peaton.yM1.type == "libre" &&
       vec_peaton.yP1.type != "libre"){
     // aplicar un random para deterimnar cuál es el que se obtiene
-    double aleatorio;
+    double aleatorio = uniform_dist_0_1(generator);
     if (aleatorio <= p_w23) return "wait";
     else return "left";
   }
@@ -131,7 +131,7 @@ std::string evolution2right(neighborhood vec_peaton){
       vec_peaton.yM1.type == "libre" &&
       vec_peaton.yP1.type == "libre"){
     // aplicar un random para deterimnar cuál es el que se obtiene
-    double aleatorio;
+    double aleatorio = uniform_dist_0_1(generator);
     if (aleatorio <= p_w31) return "wait";
     else if (aleatorio <= p_w31 + p_a31) return "left";
     else return "right";
@@ -145,7 +145,7 @@ std::string evolution2right(neighborhood vec_peaton){
       vec_peaton.yM1.type != "libre" &&
       vec_peaton.yP1.type == "libre"){
     // aplicar un random para deterimnar cuál es el que se obtiene
-    double aleatorio;
+    double aleatorio = uniform_dist_0_1(generator);
     if (aleatorio <= p_w32) return "wait";
     else return "right";
   }
@@ -158,7 +158,7 @@ std::string evolution2right(neighborhood vec_peaton){
       vec_peaton.yM1.type == "libre" &&
       vec_peaton.yP1.type != "libre"){
     // aplicar un random para deterimnar cuál es el que se obtiene
-    double aleatorio;
+    double aleatorio = uniform_dist_0_1(generator);
     if (aleatorio <= p_w32) return "wait";
     else return "left";
   }
@@ -216,3 +216,33 @@ neighborhood vec2right(neighborhood vecindad){
 
 
 // devolvemos el paso de ese peatón para el siguiente tiempo
+// paso_SRP -> paso desde el sistema de referencia del peatón
+std::pair<int,int> next_cell_grid(std::string paso_SRP,
+                                  std::string direccion_original,
+                                  std::pair<int,int> posicion_original){
+  // para conocer el paso que dará el peatón desde un punto de vista euleriano
+  // debemos conocer la dirección original del peaton && el paso que dió
+  std::pair<int,int> paso_a_dar = map_directs[direccion_original][paso_SRP];
+
+  return {posicion_original.first  + paso_a_dar.first,
+          posicion_original.second + paso_a_dar.second};
+
+}
+
+// función que devuelve el paso a dar desde el sistema de referencia del peaton
+// => vecindad
+// <= string con el movimiento a dar
+std::pair<int,int> movement_any_direction(neighborhood vec_peaton,
+                                          std::pair<int,int> posicion_original){
+  // cambio de la vecindad hacia "E"
+  neighborhood vec_peaton_E = vec2right(vec_peaton);
+
+  // aplicar la función de evolución de "E"
+  std::string resultSRP = evolution2right(vec_peaton_E);
+
+  // hacer el cambio de la dirección de right a la original
+  std::pair<int,int> result = next_cell_grid(resultSRP,
+                                            vec_peaton.xy.direction,
+                                            posicion_original);
+  return result;
+}

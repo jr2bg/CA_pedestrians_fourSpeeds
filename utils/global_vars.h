@@ -22,6 +22,7 @@ std::unordered_map<std::string, std::unordered_map <std::string, std::pair<int,i
 });
 
 std::unordered_map<std::string, std::unordered_map<std::string,std::string>> map_cells_rotation({
+  // peatón central va al oeste
   {"W", {{"E","W"},
          {"W","E"}}}
 });
