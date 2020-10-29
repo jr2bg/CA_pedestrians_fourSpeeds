@@ -26,7 +26,7 @@ void open_geometry(int W, int N, float rho_0){
                               k,
                               lista_peatones,
                               "open",
-                              tesellation)
+                              tesellation);
 
     // se anexan peatones cada 6 pasos de tiempo
     if (k % 6 == 0){
@@ -65,7 +65,7 @@ void periodic_geometry(int W, int N, float rho_0){
                               k,
                               lista_peatones,
                               "periodic",
-                              tesellation)
+                              tesellation);
 
     // se anexan peatones al inicio
     if (k == 0){

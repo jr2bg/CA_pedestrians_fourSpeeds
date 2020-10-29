@@ -76,9 +76,9 @@ std::vector<pedestrian> func_new_list_pedestrian(
 
     // debemos corroborar si el peatón puede caminar en ese tiempo
         // peaton a 1.5
-    if ((( peatoncito == "blue"  || peatoncito == "red") && tiempo % 2 == 0) ||
+    if ((( peatoncito.color == "blue"  || peatoncito.color == "red") && tiempo % 2 == 0) ||
         // peaton a 1
-        (( peatoncito == "green"  || peatoncito == "pink") && tiempo % 3 == 0)){
+        (( peatoncito.color == "green"  || peatoncito.color == "pink") && tiempo % 3 == 0)){
       // resultado queda guardado en new_list_pedestrian
       // función en evolutionRules.h
       inner_functions_4each_pedestrian(
@@ -121,6 +121,7 @@ void print_grid(std::vector<std::vector<std::string>> tesellation){
 
   refresh();
   //getnstr( enter2continue, sizeof( enter2continue ) - 1 );
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }
 
 // función de inicialización de peatones para una frontera periódica
