@@ -61,6 +61,7 @@ std::vector<std::vector<std::string>> func_colored_grid(
 // barrido sobre toda la lista de peatones y creación de una nueva lista
 std::vector<pedestrian> func_new_list_pedestrian(
                           int W,
+                          int tiempo,
                           std::vector<pedestrian> lista_peatones,
                           std::string geometry,
                           std::vector<std::vector<std::string>> tesellation){
@@ -71,14 +72,30 @@ std::vector<pedestrian> func_new_list_pedestrian(
   // barrido sobre todos los elementos de la lista de peatones usando un iterador
   for (std::vector<pedestrian>::iterator it = lista_peatones.begin(); it != lista_peatones.end(); it++){
 
-    // resultado queda guardado en new_list_pedestrian
-    // función en evolutionRules.h
-    inner_functions_4each_pedestrian(
-          W,
-          *it,
-          geometry,
-          new_list_pedestrian,
-          tesellation);
+    pedestrian peatoncito = *it;
+
+    // debemos corroborar si el peatón puede caminar en ese tiempo
+        // peaton a 1.5
+    if ((( peatoncito == "blue"  || peatoncito == "red") && tiempo % 2 == 0) ||
+        // peaton a 1
+        (( peatoncito == "green"  || peatoncito == "pink") && tiempo % 3 == 0)){
+      // resultado queda guardado en new_list_pedestrian
+      // función en evolutionRules.h
+      inner_functions_4each_pedestrian(
+            W,
+            *it,
+            geometry,
+            new_list_pedestrian,
+            tesellation);
+    }
+
+
+    // si a ese tiempo el peatón no caminó,
+    // entonces solo debemos agregar el peatoncito a nuestra lista de peatones
+    else {
+      new_list_pedestrian.push_back(peatoncito);
+    }
+
   }
 
   //devolvemos la nueva lista actualizada
@@ -89,7 +106,8 @@ std::vector<pedestrian> func_new_list_pedestrian(
 void print_grid(std::vector<std::vector<std::string>> tesellation){
   std::string to_print;
 
-  char enter2continue [10];
+  //char enter2continue [10];
+  // creación del string a imprimir. Barre la teselación y va anexando elementos
   for(auto row:tesellation){
     for (auto cll: row){
       to_print += map_string2charsConsole[cll];
