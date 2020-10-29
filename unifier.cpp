@@ -45,7 +45,7 @@ int main(int arg, char **argv){
     periodic_geometry(W, n_pasos_tiempo, rho_0);
   }
 
-  // cerrado del screen 
+  // cerrado del screen
   endwin();
 
   return 0;

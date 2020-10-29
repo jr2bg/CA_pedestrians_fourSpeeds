@@ -76,7 +76,7 @@ std::string evolution2right(neighborhood vec_peaton){
     // aplicar un random para deterimnar cuál es el que se obtiene
     double aleatorio = uniform_dist_0_1(generator);
     if (aleatorio <= p_w13) return "wait";
-    else return "right";
+    else return "left";
   }
 
   // e)
@@ -282,8 +282,11 @@ int actualize_new_list_pedestrian(
 
 
 // seleccion de la vecindad a partir del peatón y la teselacion
+// NOTA: está programada para seguir la selección de una teselación de
+//       la geometría OPEN, falta considerar la geometría PERIODIC
 neighborhood neighborhood_selection(
     int W,
+    std::string geometry,
     pedestrian peaton,
     std::vector<std::vector<std::string>> tesellation){
 
@@ -298,11 +301,21 @@ neighborhood neighborhood_selection(
   cell h_xP1;
 
   // tener cuidado con los límites en X
-  if (x<= 0) {cell h_xM1;}
-  else  {cell h_xM1 (tesellation[y][x - 1]);}
+  if (geometry == "open"){
+    if (x == 0) {;}
+    else  {h_xM1 = cell (tesellation[y][x - 1]);}
 
-  if (x>= W-1) {cell h_xP1 ;}
-  else {cell h_xP1 (tesellation[y][x + 1]);}
+    if (x == W-1) {;}
+    else {h_xP1 = cell (tesellation[y][x + 1]);}
+  }
+
+  else if (geometry == "periodic"){
+    if (x == 0) {h_xM1 = cell (tesellation[y][W - 1]);}
+    else  {cell h_xM1 (tesellation[y][x - 1]);}
+
+    if (x == W-1) {cell h_xP1 (tesellation[y][0]);}
+    else {cell h_xP1 (tesellation[y][x + 1]);}
+  }
 
   cell h_yM1 (tesellation[y - 1][x]);
   cell h_yP1 (tesellation[y + 1][x]);
@@ -327,7 +340,7 @@ int inner_functions_4each_pedestrian(
       std::vector<std::vector<std::string>> tesellation){
 
   // determinamos la vecindad del peaton
-  neighborhood vec_peaton = neighborhood_selection( W,  peaton,   tesellation);
+  neighborhood vec_peaton = neighborhood_selection( W, geometry,  peaton,   tesellation);
 
   // obtenemos el movimiento para cualquier dirección
   std::pair<int,int> next_pos = movement_any_direction(   vec_peaton,   peaton.position);
