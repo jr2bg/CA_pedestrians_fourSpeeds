@@ -53,7 +53,7 @@ std::vector<std::vector<std::string>> func_colored_grid(
     // cambio de color
     tesellation[y][x] = (*it).color;
   }
-  
+
   return tesellation;
 }
 
@@ -61,7 +61,7 @@ std::vector<std::vector<std::string>> func_colored_grid(
 // barrido sobre toda la lista de peatones y creación de una nueva lista
 std::vector<pedestrian> func_new_list_pedestrian(
                           int W,
-                          std::vector<pedestrian> lista_peatones;
+                          std::vector<pedestrian> lista_peatones,
                           std::string geometry,
                           std::vector<std::vector<std::string>> tesellation){
 
@@ -83,4 +83,69 @@ std::vector<pedestrian> func_new_list_pedestrian(
 
   //devolvemos la nueva lista actualizada
   return new_list_pedestrian;
+}
+
+// función que imprime el grid en terminal
+void print_grid(std::vector<std::vector<std::string>> tesellation){
+  std::string to_print;
+
+  char enter2continue [10];
+  for(auto row:tesellation){
+    for (auto cll: row){
+      to_print += map_string2charsConsole[cll];
+    }
+    to_print += "\n";
+  }
+  char *chars2print = &to_print[0];
+
+  clear();
+  addstr(chars2print);
+
+  refresh();
+  //getnstr( enter2continue, sizeof( enter2continue ) - 1 );
+}
+
+// función de inicialización de peatones para una frontera periódica
+std::vector<pedestrian> func_init_list_pedestrians_periodic(int W, float rho_0){
+  // numero de peatones de cada tipo
+  int n_blue  = rho_0 * map_initial_densities["blue"];
+  int n_green = rho_0 * map_initial_densities["green"];
+  int n_red   = rho_0 * map_initial_densities["red"];
+  int n_pink  = rho_0 * map_initial_densities["pink"];
+
+  // vector de tamaño W*W y le aplicamos el shuffle
+  std::vector<std::pair<int,int>> to_shuffle_grid (W * W) ;
+
+  for (int i = 0; i < W; i++){
+    for (int j = 0; j < W; j++){
+      to_shuffle_grid[i*W + j] = {i,j+1};
+    }
+  }
+  // shuffle
+  Fisher_Yates_shuffle_pairs(to_shuffle_grid);
+
+  std::vector<pedestrian> init_pedestrians;
+
+  for (int i = 0; i < n_blue; i++){
+    pedestrian peaton_agregar ("blue", to_shuffle_grid[i]);
+    init_pedestrians.push_back(peaton_agregar);
+  }
+
+  for (int i = 0; i < n_green; i++){
+    pedestrian peaton_agregar ("green", to_shuffle_grid[n_blue + i]);
+    init_pedestrians.push_back(peaton_agregar);
+  }
+
+  for (int i = 0; i < n_red; i++){
+    pedestrian peaton_agregar ("red", to_shuffle_grid[n_blue + n_green + i]);
+    init_pedestrians.push_back(peaton_agregar);
+  }
+
+  for (int i = 0; i < n_pink; i++){
+    pedestrian peaton_agregar ("pink", to_shuffle_grid[n_blue + n_green + n_red +i]);
+    init_pedestrians.push_back(peaton_agregar);
+  }
+
+  return init_pedestrians;
+
 }

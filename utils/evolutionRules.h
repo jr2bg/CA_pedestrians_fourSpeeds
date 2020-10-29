@@ -274,7 +274,7 @@ pedestrian pedestrian2push(std::string clr, std::pair<int,int> valid_pos){
 
 // agregamos el peatón que nos interesa a la nueva lista de peatones
 int actualize_new_list_pedestrian(
-      vector<pedestrian> &new_list_pedestrian,
+      std::vector<pedestrian> &new_list_pedestrian,
       pedestrian peatonAanexar){
   new_list_pedestrian.push_back(peatonAanexar);
   return 0;
@@ -283,6 +283,7 @@ int actualize_new_list_pedestrian(
 
 // seleccion de la vecindad a partir del peatón y la teselacion
 neighborhood neighborhood_selection(
+    int W,
     pedestrian peaton,
     std::vector<std::vector<std::string>> tesellation){
 
@@ -292,11 +293,25 @@ neighborhood neighborhood_selection(
 
   // recordar que la teselación tiene 2 filas de MAS, por las paredes
   // lo anterior debe tomarse en cuenta durante la "construcción" de los peatones
-  vec_peaton.xy  = tesellation[y][x];
-  vec_peaton.xP1 = tesellation[y][x + 1];
-  vec_peaton.xM1 = tesellation[y][x - 1];
-  vec_peaton.yP1 = tesellation[y + 1][x];
-  vec_peaton.yM1 = tesellation[y - 1][x];
+  cell h_xy (tesellation[y][x]);
+  cell h_xM1;
+  cell h_xP1;
+
+  // tener cuidado con los límites en X
+  if (x<= 0) {cell h_xM1;}
+  else  {cell h_xM1 (tesellation[y][x - 1]);}
+
+  if (x>= W-1) {cell h_xP1 ;}
+  else {cell h_xP1 (tesellation[y][x + 1]);}
+
+  cell h_yM1 (tesellation[y - 1][x]);
+  cell h_yP1 (tesellation[y + 1][x]);
+
+  vec_peaton.xy  = h_xy;
+  vec_peaton.xP1 = h_xP1;
+  vec_peaton.xM1 = h_xM1;
+  vec_peaton.yP1 = h_yP1;
+  vec_peaton.yM1 = h_yM1;
 
   return vec_peaton;
 }
@@ -308,11 +323,11 @@ int inner_functions_4each_pedestrian(
       int W,
       pedestrian peaton,
       std::string geometry,
-      vector<pedestrian> &new_list_pedestrian,
+      std::vector<pedestrian> &new_list_pedestrian,
       std::vector<std::vector<std::string>> tesellation){
 
   // determinamos la vecindad del peaton
-  neighborhood vec_peaton = neighborhood_selection(   peaton,   tesellation);
+  neighborhood vec_peaton = neighborhood_selection( W,  peaton,   tesellation);
 
   // obtenemos el movimiento para cualquier dirección
   std::pair<int,int> next_pos = movement_any_direction(   vec_peaton,   peaton.position);

@@ -70,9 +70,20 @@ std::unordered_map<std::string, std::string> map_colors_GUI({
   {"black" , "#000000"}
 });
 
+std::unordered_map<std::string, std::string> map_string2charsConsole({
+  {"white", " "},
+  {"black", "#"},
+  {"blue", ">"},
+  {"green", "}"},
+  {"red", "<"},
+  {"pink", "{"}
+});
 
 // hm de los colores con su correspondiente densidad para el grid,
 // multiplicar por densidad inicial de peatones rho_0
-// std::unordered_map<std::string,float> map_initial_densities({
-//   {""}
-// });
+std::unordered_map<std::string,float> map_initial_densities({
+  {"blue"  , 0.5},
+  {"green" , 0.5},
+  {"red"   , 0.5},
+  {"pink"  , 0.5}
+});
