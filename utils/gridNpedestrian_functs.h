@@ -107,14 +107,16 @@ void print_grid(std::vector<std::vector<std::string>> tesellation){
 
 // función de inicialización de peatones para una frontera periódica
 std::vector<pedestrian> func_init_list_pedestrians_periodic(int W, float rho_0){
+
+  int surface = W * W;
   // numero de peatones de cada tipo
-  int n_blue  = rho_0 * map_initial_densities["blue"];
-  int n_green = rho_0 * map_initial_densities["green"];
-  int n_red   = rho_0 * map_initial_densities["red"];
-  int n_pink  = rho_0 * map_initial_densities["pink"];
+  int n_blue  = rho_0 * map_initial_densities["blue"]  * surface;
+  int n_green = rho_0 * map_initial_densities["green"] * surface;
+  int n_red   = rho_0 * map_initial_densities["red"]   * surface;
+  int n_pink  = rho_0 * map_initial_densities["pink"]  * surface;
 
   // vector de tamaño W*W y le aplicamos el shuffle
-  std::vector<std::pair<int,int>> to_shuffle_grid (W * W) ;
+  std::vector<std::pair<int,int>> to_shuffle_grid (surface) ;
 
   for (int i = 0; i < W; i++){
     for (int j = 0; j < W; j++){
@@ -125,6 +127,8 @@ std::vector<pedestrian> func_init_list_pedestrians_periodic(int W, float rho_0){
   Fisher_Yates_shuffle_pairs(to_shuffle_grid);
 
   std::vector<pedestrian> init_pedestrians;
+
+  // cada for consta de la inicialización del peatón + su anexión al vector
 
   for (int i = 0; i < n_blue; i++){
     pedestrian peaton_agregar ("blue", to_shuffle_grid[i]);
@@ -147,5 +151,55 @@ std::vector<pedestrian> func_init_list_pedestrians_periodic(int W, float rho_0){
   }
 
   return init_pedestrians;
+
+}
+
+// cada 6 pasos de tiempo debe haber otros peatones ingresando al grid
+// se usará esta función para determinarlos así como su ubicación
+std::vector<pedestrian> func_init_list_pedestrians_open(int W, float rho_0){
+  // aquí basta hacer un random del tamaño de W para conocer cuál es
+  int n_blue  = rho_0 * map_initial_densities["blue"]  * W;
+  int n_green = rho_0 * map_initial_densities["green"] * W;
+  int n_red   = rho_0 * map_initial_densities["red"]   * W;
+  int n_pink  = rho_0 * map_initial_densities["pink"]  * W;
+
+  std::vector<int> borde_izq (W);
+  std::vector<int> borde_der (W);
+
+  // inicialización de la lista
+  for (int i = 0; i < W; i++){
+    borde_izq[i] = i + 1;
+    borde_der[i] = i + 1;
+  }
+
+  // shuffle
+  Fisher_Yates_shuffle_ints(borde_izq);
+  Fisher_Yates_shuffle_ints(borde_der);
+
+  // inicialización del vector con los peatones a añadir
+  std::vector<pedestrian> to_add_peds_open;
+
+  //
+  for (int i = 0; i < n_blue; i++){
+    pedestrian peaton_agregar ("blue", {0, borde_izq[i]});
+    to_add_peds_open.push_back(peaton_agregar);
+  }
+
+  for (int i = 0; i < n_green; i++){
+    pedestrian peaton_agregar ("green", {0, borde_izq[i + n_blue]});
+    to_add_peds_open.push_back(peaton_agregar);
+  }
+
+  for (int i = 0; i < n_red; i++){
+    pedestrian peaton_agregar ("red", {W-1, borde_der[i]});
+    to_add_peds_open.push_back(peaton_agregar);
+  }
+
+  for (int i = 0; i < n_pink; i++){
+    pedestrian peaton_agregar ("pink", {W-1, borde_der[i + n_red]});
+    to_add_peds_open.push_back(peaton_agregar);
+  }
+
+  return to_add_peds_open;
 
 }
