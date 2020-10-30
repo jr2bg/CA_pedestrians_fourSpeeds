@@ -64,7 +64,7 @@ std::vector<pedestrian> func_new_list_pedestrian(
                           int tiempo,
                           std::vector<pedestrian> lista_peatones,
                           std::string geometry,
-                          std::vector<std::vector<std::string>> tesellation){
+                          std::vector<std::vector<std::string>> &tesellation){
 
   // inicialización de una nueva lista de peatones
   std::vector<pedestrian> new_list_pedestrian;
@@ -88,8 +88,6 @@ std::vector<pedestrian> func_new_list_pedestrian(
             new_list_pedestrian,
             tesellation);
     }
-
-
     // si a ese tiempo el peatón no caminó,
     // entonces solo debemos agregar el peatoncito a nuestra lista de peatones
     else {

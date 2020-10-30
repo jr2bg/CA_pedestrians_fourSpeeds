@@ -337,13 +337,20 @@ int inner_functions_4each_pedestrian(
       pedestrian peaton,
       std::string geometry,
       std::vector<pedestrian> &new_list_pedestrian,
-      std::vector<std::vector<std::string>> tesellation){
-
+      std::vector<std::vector<std::string>> &tesellation){
+        
   // determinamos la vecindad del peaton
   neighborhood vec_peaton = neighborhood_selection( W, geometry,  peaton,   tesellation);
 
   // obtenemos el movimiento para cualquier dirección
   std::pair<int,int> next_pos = movement_any_direction(   vec_peaton,   peaton.position);
+
+
+  // posicion del peaton
+  int x = peaton.position.first;
+  int y = peaton.position.second;
+  // actualización en la teselación
+  tesellation[y][x] = "white";
 
   // si la geometría es abierta Y pero la posición NO es válida
   if (geometry == "open" && !is_valid_position_open(W, next_pos) ){
@@ -366,6 +373,12 @@ int inner_functions_4each_pedestrian(
   // lo anexamos a la lista
   actualize_new_list_pedestrian(  new_list_pedestrian, peatonAanexar);
 
+  // cambiamos el color al correspondiente por el cambio de posición
+
+  int nx = next_pos.first;
+  int ny = next_pos.second;
+
+  tesellation[ny][nx] = peaton.color;
   // termina la ejecución
   return 0;
 }
