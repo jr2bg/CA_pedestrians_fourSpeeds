@@ -311,10 +311,10 @@ neighborhood neighborhood_selection(
 
   else if (geometry == "periodic"){
     if (x == 0) {h_xM1 = cell (tesellation[y][W - 1]);}
-    else  {cell h_xM1 (tesellation[y][x - 1]);}
+    else  {h_xM1 = cell (tesellation[y][x - 1]);}
 
-    if (x == W-1) {cell h_xP1 (tesellation[y][0]);}
-    else {cell h_xP1 (tesellation[y][x + 1]);}
+    if (x == W-1) { h_xP1 = cell (tesellation[y][0]);}
+    else {h_xP1 = cell (tesellation[y][x + 1]);}
   }
 
   cell h_yM1 (tesellation[y - 1][x]);
