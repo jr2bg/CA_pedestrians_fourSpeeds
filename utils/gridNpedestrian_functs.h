@@ -33,11 +33,34 @@ std::vector<pedestrian> generator_list_pedestrians(
   return result;
 }
 
+//función para agregar información de los obstáculos al grid
+std::vector<std::vector<std::string>> func_obstacles_grid(
+                                        int W,
+                                        std::vector<std::pair<int,int>> lista_obstaculos,
+                                        std::vector<std::vector<std::string>> tesellation
+                                      ){
+  // barremos sobre la lista de obstaculos para anexarlos
+  for (std::vector<pedestrian>::iterator it = lista_obstaculos.begin(); it != lista_obstaculos.end(); it++){
+
+    // posición
+    int x = (*it).position.first;
+    int y = (*it).position.second;
+
+    // cambio de color
+    tesellation[y][x] = "black";
+  }
+
+  return tesellation;
+}
+
+
 // función que genera el grid, con el color correspondiente, a partir de
 // la lista de peatones y el tamaño del universo deseado
 std::vector<std::vector<std::string>> func_colored_grid(
                                         int W,
-                                        std::vector<pedestrian> lista_peatones){
+                                        std::vector<pedestrian> lista_peatones,
+                                        std::vector<std::pair<int,int>> lista_obstaculos
+                                      ){
 
 
   // inicializamos un grid
@@ -53,6 +76,7 @@ std::vector<std::vector<std::string>> func_colored_grid(
     // cambio de color
     tesellation[y][x] = (*it).color;
   }
+  tesellation = func_obstacles_grid( W, lista_obstaculos, tesellation);
 
   return tesellation;
 }
@@ -123,7 +147,11 @@ void print_grid(std::vector<std::vector<std::string>> tesellation){
 }
 
 // función de inicialización de peatones para una frontera periódica
-std::vector<pedestrian> func_init_list_pedestrians_periodic(int W, float rho_0){
+// la teselación nos dirá si hay algún obstáculo en el punto elegido
+std::vector<pedestrian> func_init_list_pedestrians_periodic(
+                          int W,
+                          float rho_0,
+                          std::vector<std::vector<std::string>> tesellation){
 
   int surface = W * W;
   // numero de peatones de cada tipo

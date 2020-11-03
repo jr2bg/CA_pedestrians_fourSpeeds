@@ -18,6 +18,14 @@ void open_geometry(int W, int N, float rho_0){
   // inicializar teselación
   std::vector<std::vector<std::string>> tesellation = grid_starter(W);
 
+  // insertar obstáculos, será una lista de pares, cada par corresponde
+  // a una posición
+  std::vector<std::pair<int,int>> lista_obstaculos;
+  // TEMPORAL!! ponemos uno en medio
+  lista_obstaculos.push_back({W/2,W/2})
+
+  tesellation = func_obstacles_grid( W,  lista_obstaculos,  tesellation);
+
   // ciclo sobre el número de iteraciones
   for (int k = 0; k < N ; k++){
     // barrer sobre todos los peatones
@@ -30,7 +38,7 @@ void open_geometry(int W, int N, float rho_0){
 
     // se anexan peatones cada 6 pasos de tiempo
     if (k % 6 == 0){
-      peatones_anexar = func_init_list_pedestrians_open( W, rho_0);
+      peatones_anexar = func_init_list_pedestrians_open( W, rho_0, tesellation);
       lista_peatones.insert(lista_peatones.end(),
                             peatones_anexar.begin(),
                             peatones_anexar.end());
@@ -38,7 +46,7 @@ void open_geometry(int W, int N, float rho_0){
 
     // pasar la info de los peatones al grid
     // func_colored_grid crea un grid en blanco y trabaja sobre él
-    tesellation = func_colored_grid(  W,  lista_peatones);
+    tesellation = func_colored_grid(  W,  lista_peatones, lista_obstaculos);
 
     // imprimir en pantalla
     print_grid(tesellation);
