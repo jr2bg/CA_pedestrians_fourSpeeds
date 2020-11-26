@@ -35,19 +35,18 @@ std::vector<pedestrian> generator_list_pedestrians(
 
 //función para agregar información de los obstáculos al grid
 std::vector<std::vector<std::string>> func_obstacles_grid(
-                                        int W,
                                         std::vector<std::pair<int,int>> lista_obstaculos,
                                         std::vector<std::vector<std::string>> tesellation
                                       ){
   // barremos sobre la lista de obstaculos para anexarlos
-  for (std::vector<pedestrian>::iterator it = lista_obstaculos.begin(); it != lista_obstaculos.end(); it++){
+  for (std::vector<pair<int,int>>::iterator it = lista_obstaculos.begin(); it != lista_obstaculos.end(); it++){
 
     // posición
     int x = (*it).position.first;
     int y = (*it).position.second;
 
     // cambio de color
-    tesellation[y][x] = "black";
+    tesellation[y+1][x] = "black";
   }
 
   return tesellation;
@@ -146,6 +145,37 @@ void print_grid(std::vector<std::vector<std::string>> tesellation){
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }
 
+// función para obtener las celdas ocupadas a la izquierda o derecha, dependiendo
+// de la variable extremo
+std::vector<int> get_obst_xtrm(
+                   int W,
+                   std::string extremo,
+                   std::vector<std::vector<std::string>> tesellation){
+
+  std::vector<int> occupied (W);
+  int ps = 0;
+  int extremo_int;
+  if (extremo == "left") extremo_int = 0;
+  else if (extremo == "right") extremo_int = W-1;
+
+  // barrido sobre todos los elementos de la izquierda de teselation
+  // para encontrar elementos que no sean vacíos
+  for (int i = 1; i < W +1; i++){
+    if (tesellation[i][extremo_int] != "white") {
+      occupied[ps] = i;
+      ps++;
+    }
+  }
+
+  // redefinimos el tamaño del vector
+  occupied.resize(ps);
+
+  // lo ordenamos
+  std::sort(occupied.begin(), occupied.end());
+
+  return occupied;
+}
+
 // función de inicialización de peatones para una frontera periódica
 // la teselación nos dirá si hay algún obstáculo en el punto elegido
 std::vector<pedestrian> func_init_list_pedestrians_periodic(
@@ -201,7 +231,10 @@ std::vector<pedestrian> func_init_list_pedestrians_periodic(
 
 // cada 6 pasos de tiempo debe haber otros peatones ingresando al grid
 // se usará esta función para determinarlos así como su ubicación
-std::vector<pedestrian> func_init_list_pedestrians_open(int W, float rho_0){
+std::vector<pedestrian> func_init_list_pedestrians_open(
+                          int W,
+                          float rho_0,
+                          std::vector<std::vector<std::string>> tesellation){
   // aquí basta hacer un random del tamaño de W para conocer cuál es
   int n_blue  = rho_0 * map_initial_densities["blue"]  * W;
   int n_green = rho_0 * map_initial_densities["green"] * W;
@@ -211,11 +244,38 @@ std::vector<pedestrian> func_init_list_pedestrians_open(int W, float rho_0){
   std::vector<int> borde_izq (W);
   std::vector<int> borde_der (W);
 
+  // casillas izquierdas ocupadas
+  std::vector<int> occup_left = get_obst_xtrm( W, "left", tesellation);
+  // casillas derechas ocupadas
+  std::vector<int> occup_right = get_obst_xtrm( W, "right", tesellation);
+
+  // contadores para left o right
+  int  l = 0,   r = 0;
+  int bl = 0,  br = 0;
   // inicialización de la lista
   for (int i = 0; i < W; i++){
-    borde_izq[i] = i + 1;
-    borde_der[i] = i + 1;
+    // si está ocupado en la posición i, entonces al l le sumamos 1
+    // el vector debe tener valores
+    if (occup_left.size > l && [l] == i){
+      l++;
+    }
+    else {
+      borde_izq[bl] = i + 1;
+      bl++;
+    }
+    // borde derecho
+    if (occup_right.size > r && [r] == i){
+      r++;
+    }
+    else {
+      borde_izq[br] = i + 1;
+      br++;
+    }
   }
+
+  // resize de ambos vectores
+  borde_izq.resize(bl);
+  borde_der.resize(br);
 
   // shuffle
   Fisher_Yates_shuffle_ints(borde_izq);

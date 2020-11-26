@@ -32,17 +32,26 @@ int main(int arg, char **argv){
   float rho_0 = stof(argv[2]);
   int W = stoi(argv[3]);
   int n_pasos_tiempo = stoi(argv[4]);
+  vector<pair<int,int>> lista_obstaculos;
+  ////////////////////////
+  lista_obstaculos.append({5,5});
+  lista_obstaculos.append({1,3});
+  lista_obstaculos.append({10,15});
+  lista_obstaculos.append({14,6});
+  lista_obstaculos.append({20,16});
+  ////////////////////////
+
 
   // inicialización del screen
   initscr();
 
   // selección de la función de barrido de tiempo a usar
   if (geometry == "open"){
-    open_geometry(W, n_pasos_tiempo, rho_0);
+    open_boundary(W, n_pasos_tiempo, rho_0, lista_obstaculos);
   }
 
   else if (geometry == "periodic"){
-    periodic_geometry(W, n_pasos_tiempo, rho_0);
+    periodic_boundary(W, n_pasos_tiempo, rho_0, lista_obstaculos);
   }
 
   // cerrado del screen

@@ -10,7 +10,7 @@
 
 // geometría open
 // N -> número de ciclos
-void open_geometry(int W, int N, float rho_0){
+void open_boundary(int W, int N, float rho_0, std::vector<std::pair<int,int>> lista_obstaculos){
 
   // inicializamos lista de transeuntes
   std::vector<pedestrian> lista_peatones, peatones_anexar;
@@ -20,9 +20,9 @@ void open_geometry(int W, int N, float rho_0){
 
   // insertar obstáculos, será una lista de pares, cada par corresponde
   // a una posición
-  std::vector<std::pair<int,int>> lista_obstaculos;
-  // TEMPORAL!! ponemos uno en medio
-  lista_obstaculos.push_back({W/2,W/2})
+  // std::vector<std::pair<int,int>> lista_obstaculos;
+  // // TEMPORAL!! ponemos uno en medio
+  // lista_obstaculos.push_back({W/2,W/2})
 
   tesellation = func_obstacles_grid( W,  lista_obstaculos,  tesellation);
 
@@ -57,13 +57,16 @@ void open_geometry(int W, int N, float rho_0){
 
 // geometría periodic
 // N -> número de ciclos
-void periodic_geometry(int W, int N, float rho_0){
+void periodic_boundary(int W, int N, float rho_0, std::vector<std::pair<int,int>> lista_obstaculos){
 
   // inicializamos lista de transeuntes
   std::vector<pedestrian> lista_peatones,  peatones_anexar;
 
   // inicializar teselación
   std::vector<std::vector<std::string>> tesellation = grid_starter(W);
+
+  // consideración de los obstáculos
+  tesellation = func_obstacles_grid(lista_obstaculos, tesellation);
 
   // ciclo sobre el número de iteraciones
   for (int k = 0; k < N ; k++){

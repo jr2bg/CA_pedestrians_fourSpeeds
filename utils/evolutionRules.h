@@ -229,9 +229,9 @@ std::pair<int,int> next_cell_grid(std::string paso_SRP,
 
 }
 
-// función que devuelve el paso a dar desde el sistema de referencia del peaton
+// función que devuelve el paso a dar de un peatón
 // => vecindad
-// <= string con el movimiento a dar
+// <= par con la posición del peatón al siguiente tiempo
 std::pair<int,int> movement_any_direction(neighborhood vec_peaton,
                                           std::pair<int,int> posicion_original){
   // cambio de la vecindad hacia "E"
@@ -338,7 +338,7 @@ int inner_functions_4each_pedestrian(
       std::string geometry,
       std::vector<pedestrian> &new_list_pedestrian,
       std::vector<std::vector<std::string>> &tesellation){
-        
+
   // determinamos la vecindad del peaton
   neighborhood vec_peaton = neighborhood_selection( W, geometry,  peaton,   tesellation);
 
