@@ -241,6 +241,7 @@ std::vector<pedestrian> func_init_list_pedestrians_open(
   int n_red   = rho_0 * map_initial_densities["red"]   * W;
   int n_pink  = rho_0 * map_initial_densities["pink"]  * W;
 
+  // casillas en los bordes izquierdo y derecho que no están ocupadas
   std::vector<int> borde_izq (W);
   std::vector<int> borde_der (W);
 
@@ -256,7 +257,8 @@ std::vector<pedestrian> func_init_list_pedestrians_open(
   for (int i = 0; i < W; i++){
     // si está ocupado en la posición i, entonces al l le sumamos 1
     // el vector debe tener valores
-    if (occup_left.size > l && [l] == i){
+    // borde izquierdo
+    if (occup_left.size > l && occup_left[l] == i + 1){ // i + 1 por considerar las paredes
       l++;
     }
     else {
@@ -264,11 +266,11 @@ std::vector<pedestrian> func_init_list_pedestrians_open(
       bl++;
     }
     // borde derecho
-    if (occup_right.size > r && [r] == i){
+    if (occup_right.size > r && occup_right[r] == i + 1){ // i + 1 por considerar las paredes
       r++;
     }
     else {
-      borde_izq[br] = i + 1;
+      borde_der[br] = i + 1;
       br++;
     }
   }
@@ -284,7 +286,8 @@ std::vector<pedestrian> func_init_list_pedestrians_open(
   // inicialización del vector con los peatones a añadir
   std::vector<pedestrian> to_add_peds_open;
 
-  //
+  //cálculo del número de peatones por color
+  
   for (int i = 0; i < n_blue; i++){
     pedestrian peaton_agregar ("blue", {0, borde_izq[i]});
     to_add_peds_open.push_back(peaton_agregar);
