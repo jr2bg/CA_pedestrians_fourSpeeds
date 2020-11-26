@@ -285,27 +285,35 @@ std::vector<pedestrian> func_init_list_pedestrians_open(
 
   // inicialización del vector con los peatones a añadir
   std::vector<pedestrian> to_add_peds_open;
+  // resize del vector con el número total de peatones a considerar
+  // por dos pasos, borde derecho y borde izquierdo
+  // len(borde_izq) >= n_blue + n_green
+  // leb(borde_der) >= n_red + n_pink
+  int n_izq = 0, n_der = 0;
 
-  //cálculo del número de peatones por color
-  
-  for (int i = 0; i < n_blue; i++){
-    pedestrian peaton_agregar ("blue", {0, borde_izq[i]});
-    to_add_peds_open.push_back(peaton_agregar);
+  if (bl < n_blue + n_green) n_izq += bl;
+  else n_izq += n_blue + n_green;
+
+  if (br < n_red + n_pink) n_der += br;
+  else n_der += n_red + n_pink;
+
+  to_add_peds_open.resize(n_izq + n_der);
+
+  for (int i = 0; i < n_izq; i++){
+    if (i < n_blue)
+      pedestrian peaton_agregar ("blue", {0, borde_izq[i]});
+    else
+      pedestrian peaton_agregar ("green", {0, borde_izq[i]});
+    to_add_peds_open[i] = peaton_agregar;
   }
 
-  for (int i = 0; i < n_green; i++){
-    pedestrian peaton_agregar ("green", {0, borde_izq[i + n_blue]});
-    to_add_peds_open.push_back(peaton_agregar);
-  }
+  for (int i = 0; i < n_der; i++){
+    if (i < n_red)
+      pedestrian peaton_agregar ("red", {W-1, borde_der[i]});
+    else
+      pedestrian peaton_agregar ("pink", {W-1, borde_der[i]});
 
-  for (int i = 0; i < n_red; i++){
-    pedestrian peaton_agregar ("red", {W-1, borde_der[i]});
-    to_add_peds_open.push_back(peaton_agregar);
-  }
-
-  for (int i = 0; i < n_pink; i++){
-    pedestrian peaton_agregar ("pink", {W-1, borde_der[i + n_red]});
-    to_add_peds_open.push_back(peaton_agregar);
+    to_add_peds_open[i + n_izq] = peaton_agregar;
   }
 
   return to_add_peds_open;
