@@ -39,11 +39,11 @@ std::vector<std::vector<std::string>> func_obstacles_grid(
                                         std::vector<std::vector<std::string>> tesellation
                                       ){
   // barremos sobre la lista de obstaculos para anexarlos
-  for (std::vector<pair<int,int>>::iterator it = lista_obstaculos.begin(); it != lista_obstaculos.end(); it++){
+  for (std::vector<std::pair<int,int>>::iterator it = lista_obstaculos.begin(); it != lista_obstaculos.end(); it++){
 
     // posición
-    int x = (*it).position.first;
-    int y = (*it).position.second;
+    int x = (*it).first;
+    int y = (*it).second;
 
     // cambio de color
     tesellation[y+1][x] = "black";
@@ -75,7 +75,7 @@ std::vector<std::vector<std::string>> func_colored_grid(
     // cambio de color
     tesellation[y][x] = (*it).color;
   }
-  tesellation = func_obstacles_grid( W, lista_obstaculos, tesellation);
+  tesellation = func_obstacles_grid( lista_obstaculos, tesellation);
 
   return tesellation;
 }
@@ -193,36 +193,48 @@ std::vector<pedestrian> func_init_list_pedestrians_periodic(
   // vector de tamaño W*W y le aplicamos el shuffle
   std::vector<std::pair<int,int>> to_shuffle_grid (surface) ;
 
+  // número de entradas que pueden ser usadas, esto es, sin obstáculos
+  int n_free_spaces = 0;
+
+  // a cada entrada del array le asignamos una posición ssi está libre
   for (int i = 0; i < W; i++){
     for (int j = 0; j < W; j++){
-      to_shuffle_grid[i*W + j] = {i,j+1};
+      // tener cuidado, tesselation[y,x]
+      if (tesellation[i+1][j] == "white"){
+        to_shuffle_grid[n_free_spaces] = {j,i + 1};
+        n_free_spaces++;
+      }
     }
   }
+
+  // hacemos un resize del vector, para considerar sólo los libres
+  to_shuffle_grid.resize(n_free_spaces);
+
   // shuffle
   Fisher_Yates_shuffle_pairs(to_shuffle_grid);
 
-  std::vector<pedestrian> init_pedestrians;
+  std::vector<pedestrian> init_pedestrians (n_blue + n_green + n_red + n_pink) ;
 
   // cada for consta de la inicialización del peatón + su anexión al vector
 
   for (int i = 0; i < n_blue; i++){
     pedestrian peaton_agregar ("blue", to_shuffle_grid[i]);
-    init_pedestrians.push_back(peaton_agregar);
+    init_pedestrians[i] = peaton_agregar;
   }
 
   for (int i = 0; i < n_green; i++){
     pedestrian peaton_agregar ("green", to_shuffle_grid[n_blue + i]);
-    init_pedestrians.push_back(peaton_agregar);
+    init_pedestrians[i + n_blue] = peaton_agregar;
   }
 
   for (int i = 0; i < n_red; i++){
     pedestrian peaton_agregar ("red", to_shuffle_grid[n_blue + n_green + i]);
-    init_pedestrians.push_back(peaton_agregar);
+    init_pedestrians[i + n_blue + n_green] = peaton_agregar;
   }
 
   for (int i = 0; i < n_pink; i++){
     pedestrian peaton_agregar ("pink", to_shuffle_grid[n_blue + n_green + n_red +i]);
-    init_pedestrians.push_back(peaton_agregar);
+    init_pedestrians[i + n_blue + n_green + n_red] = peaton_agregar;
   }
 
   return init_pedestrians;
@@ -258,7 +270,7 @@ std::vector<pedestrian> func_init_list_pedestrians_open(
     // si está ocupado en la posición i, entonces al l le sumamos 1
     // el vector debe tener valores
     // borde izquierdo
-    if (occup_left.size > l && occup_left[l] == i + 1){ // i + 1 por considerar las paredes
+    if (occup_left.size() > l && occup_left[l] == i + 1){ // i + 1 por considerar las paredes
       l++;
     }
     else {
@@ -266,7 +278,7 @@ std::vector<pedestrian> func_init_list_pedestrians_open(
       bl++;
     }
     // borde derecho
-    if (occup_right.size > r && occup_right[r] == i + 1){ // i + 1 por considerar las paredes
+    if (occup_right.size() > r && occup_right[r] == i + 1){ // i + 1 por considerar las paredes
       r++;
     }
     else {
@@ -297,21 +309,26 @@ std::vector<pedestrian> func_init_list_pedestrians_open(
   if (br < n_red + n_pink) n_der += br;
   else n_der += n_red + n_pink;
 
+  // consideramos solo los peatones que podamos agregar
   to_add_peds_open.resize(n_izq + n_der);
+
+  // inicialización del peaton a agregar
+  pedestrian peaton_agregar;
 
   for (int i = 0; i < n_izq; i++){
     if (i < n_blue)
-      pedestrian peaton_agregar ("blue", {0, borde_izq[i]});
+      peaton_agregar = pedestrian ("blue", {0, borde_izq[i]});
     else
-      pedestrian peaton_agregar ("green", {0, borde_izq[i]});
+      peaton_agregar = pedestrian ("green", {0, borde_izq[i]});
+
     to_add_peds_open[i] = peaton_agregar;
   }
 
   for (int i = 0; i < n_der; i++){
     if (i < n_red)
-      pedestrian peaton_agregar ("red", {W-1, borde_der[i]});
+      peaton_agregar = pedestrian ("red", {W-1, borde_der[i]});
     else
-      pedestrian peaton_agregar ("pink", {W-1, borde_der[i]});
+      peaton_agregar = pedestrian ("pink", {W-1, borde_der[i]});
 
     to_add_peds_open[i + n_izq] = peaton_agregar;
   }

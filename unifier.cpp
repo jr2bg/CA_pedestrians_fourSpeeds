@@ -34,11 +34,11 @@ int main(int arg, char **argv){
   int n_pasos_tiempo = stoi(argv[4]);
   vector<pair<int,int>> lista_obstaculos;
   ////////////////////////
-  lista_obstaculos.append({5,5});
-  lista_obstaculos.append({1,3});
-  lista_obstaculos.append({10,15});
-  lista_obstaculos.append({14,6});
-  lista_obstaculos.append({20,16});
+  lista_obstaculos.push_back({5,5});
+  lista_obstaculos.push_back({1,3});
+  lista_obstaculos.push_back({10,15});
+  lista_obstaculos.push_back({14,6});
+  lista_obstaculos.push_back({20,16});
   ////////////////////////
 
 

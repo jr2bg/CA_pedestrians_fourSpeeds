@@ -24,7 +24,7 @@ void open_boundary(int W, int N, float rho_0, std::vector<std::pair<int,int>> li
   // // TEMPORAL!! ponemos uno en medio
   // lista_obstaculos.push_back({W/2,W/2})
 
-  tesellation = func_obstacles_grid( W,  lista_obstaculos,  tesellation);
+  tesellation = func_obstacles_grid( lista_obstaculos,  tesellation);
 
   // ciclo sobre el número de iteraciones
   for (int k = 0; k < N ; k++){
@@ -80,7 +80,7 @@ void periodic_boundary(int W, int N, float rho_0, std::vector<std::pair<int,int>
 
     // se anexan peatones al inicio
     if (k == 0){
-      peatones_anexar = func_init_list_pedestrians_periodic( W, rho_0);
+      peatones_anexar = func_init_list_pedestrians_periodic( W, rho_0, tesellation);
       lista_peatones.insert(lista_peatones.end(),
                             peatones_anexar.begin(),
                             peatones_anexar.end());
@@ -88,7 +88,7 @@ void periodic_boundary(int W, int N, float rho_0, std::vector<std::pair<int,int>
 
     // pasar la info de los peatones al grid
     // func_colored_grid crea un grid en blanco y trabaja sobre él
-    tesellation = func_colored_grid(  W,  lista_peatones);
+    tesellation = func_colored_grid(  W,  lista_peatones, lista_obstaculos);
 
     // imprimir en pantalla
     print_grid(tesellation);
